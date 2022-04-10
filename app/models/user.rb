@@ -7,4 +7,6 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
+
+  enum role: { customer: 0, admin: 100 } # https://blog.saeloun.com/2022/01/05/how-to-use-enums-in-rails.html
 end
