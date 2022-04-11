@@ -1,11 +1,18 @@
+# frozen_string_literal: true
+
+# Product controller
 class ProductsController < ApplicationController
-  before_action :set_product, only: [:show, :update, :destroy]
+  before_action :set_product, only: %i[show update destroy]
 
   # GET /products
   def index
-    @products = Product.all
+    @products = Product.where(filter_params)
 
-    render json: @products
+    # render json: @products
+    # https://stackoverflow.com/questions/50775686/how-to-get-url-of-active-storage-image
+    render json: @products.map { |product|
+      product.as_json.merge({ images: product.images.map { |image| url_for(image) } })
+    }
   end
 
   # GET /products/1
@@ -39,13 +46,18 @@ class ProductsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_product
-      @product = Product.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def product_params
-      params.require(:product).permit(:name, :description, :price, :category, :brand, images: [])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_product
+    @product = Product.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def product_params
+    params.require(:product).permit(:name, :description, :price, :category, :brand, images: [])
+  end
+
+  def filter_params
+    params.permit(:category)
+  end
 end
