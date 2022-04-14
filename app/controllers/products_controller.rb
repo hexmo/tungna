@@ -6,13 +6,16 @@ class ProductsController < ApplicationController
 
   # GET /products
   def index
-    @products = Product.where(filter_params)
-
+    @products = Product.where(filter_params).map do |product|
+      product.as_json.merge({ image: url_for(product.images[0]) })
+    end
     # render json: @products
     # https://stackoverflow.com/questions/50775686/how-to-get-url-of-active-storage-image
-    render json: @products.map { |product|
-      product.as_json.merge({ images: product.images.map { |image| url_for(image) } })
-    }
+    if params[:page].present?
+      render json: @products.last(params[:page])
+    else
+      render json: @products
+    end
   end
 
   # GET /products/1
