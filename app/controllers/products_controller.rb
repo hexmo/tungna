@@ -12,7 +12,7 @@ class ProductsController < ApplicationController
     # render json: @products
     # https://stackoverflow.com/questions/50775686/how-to-get-url-of-active-storage-image
     if params[:page].present?
-      render json: @products.last(params[:page])
+      render json: @products.last(params[:page].to_i)
     else
       render json: @products
     end
