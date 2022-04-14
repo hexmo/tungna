@@ -9,7 +9,7 @@ class ProductsController < ApplicationController
     @products = Product.where(filter_params).map do |product|
       product.as_json.merge({ image: url_for(product.images[0]) })
     end
-    # render json: @products
+
     # https://stackoverflow.com/questions/50775686/how-to-get-url-of-active-storage-image
     if params[:page].present?
       render json: @products.last(params[:page].to_i)
@@ -20,7 +20,7 @@ class ProductsController < ApplicationController
 
   # GET /products/1
   def show
-    render json: @product
+    render json: @product.as_json.merge({ images: @product.images.map { |image| url_for(image) } })
   end
 
   # POST /products
