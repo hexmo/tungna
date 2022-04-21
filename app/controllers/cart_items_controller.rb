@@ -2,35 +2,22 @@
 
 # cart items
 class CartItemsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_cart_item, only: %i[show update destroy]
 
   # GET /cart_items
   def index
-    @cart_items = CartItem.all
+    @cart_items = current_user.cart_items
 
     render json: @cart_items
   end
 
-  # GET /cart_items/1
-  def show
-    render json: @cart_item
-  end
-
   # POST /cart_items
   def create
-    @cart_item = CartItem.new(cart_item_params)
+    @cart_item = CartItem.new(cart_item_params.merge(user_id: current_user.id))
 
     if @cart_item.save
       render json: @cart_item, status: :created, location: @cart_item
-    else
-      render json: @cart_item.errors, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /cart_items/1
-  def update
-    if @cart_item.update(cart_item_params)
-      render json: @cart_item
     else
       render json: @cart_item.errors, status: :unprocessable_entity
     end
