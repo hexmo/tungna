@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+# order
 class OrdersController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_order, only: %i[show update destroy]
 
   # GET /orders
   def index
-    @orders = Order.all
+    @orders = current_user.orders
 
     render json: @orders
   end
@@ -17,7 +19,7 @@ class OrdersController < ApplicationController
 
   # POST /orders
   def create
-    order_details = {user_id: current_user.id, price: current_user.cart_items_price, description: description }
+    order_details = { user_id: current_user.id, price: current_user.cart_items_price, description: description }
     @order = Order.new(order_params.merge(order_details))
 
     if @order.save
