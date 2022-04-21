@@ -28,6 +28,10 @@ class CartItemsController < ApplicationController
     @cart_item.destroy
   end
 
+  def cart_items_price
+    render json: { price: current_user.cart_items_price }
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.

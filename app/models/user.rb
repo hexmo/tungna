@@ -11,4 +11,14 @@ class User < ActiveRecord::Base
   enum role: { customer: 0, admin: 100 } # https://blog.saeloun.com/2022/01/05/how-to-use-enums-in-rails.html
 
   has_many :cart_items
+  has_many :orders
+
+  def cart_items_price
+    total_price = 0
+    cart_items.each do |item|
+      total_price += item.product.price
+    end
+
+    total_price
+  end
 end
