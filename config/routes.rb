@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :cart_items
   resources :products
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   mount_devise_token_auth_for 'User', at: 'auth'
