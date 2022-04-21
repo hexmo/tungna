@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class OrdersController < ApplicationController
-  before_action :set_order, only: [:show, :update, :destroy]
+  before_action :set_order, only: %i[show update destroy]
 
   # GET /orders
   def index
@@ -15,19 +17,12 @@ class OrdersController < ApplicationController
 
   # POST /orders
   def create
-    @order = Order.new(order_params)
+    order_details = {user_id: current_user.id, price: current_user.cart_items_price, description: description }
+    @order = Order.new(order_params.merge(order_details))
 
     if @order.save
+      current_user.cart_items.destroy_all
       render json: @order, status: :created, location: @order
-    else
-      render json: @order.errors, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /orders/1
-  def update
-    if @order.update(order_params)
-      render json: @order
     else
       render json: @order.errors, status: :unprocessable_entity
     end
@@ -39,13 +34,22 @@ class OrdersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_order
-      @order = Order.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def order_params
-      params.require(:order).permit(:user_id, :delivery_location, :description, :price)
+  # Use callbacks to share common setup or constraints between actions.
+  def set_order
+    @order = Order.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def order_params
+    params.require(:order).permit(:delivery_location)
+  end
+
+  def description
+    order_description = ''
+    current_user.cart_items.each do |item|
+      order_description += "[#{item.product.name} | Rs. #{item.product.price}/-]"
     end
+    order_description
+  end
 end
