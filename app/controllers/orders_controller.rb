@@ -48,7 +48,7 @@ class OrdersController < ApplicationController
   def description
     order_description = ''
     current_user.cart_items.each do |item|
-      order_description += "[#{item.product.name} | Rs. #{item.product.price}/-]"
+      order_description += "#{item.product.name} | Rs. #{item.product.price}/- !@"
     end
     order_description
   end
